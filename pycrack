@@ -228,6 +228,8 @@ def main():
     result = start_workers(slices)
     if result is not None:
         print(f'Found! {result}')
+    else:
+        print('Address Space Exhausted')
     stop = perf_counter()
     print(f'Finished in {round(stop-start, 2)} seconds')
 
