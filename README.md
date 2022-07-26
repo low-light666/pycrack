@@ -19,15 +19,16 @@
 
 ![alt text](./images/potato21.png)
 
-### Obs1:
-So far pycrack can deal only with md5 hashs.  
-However as we are using haslib. 
-We can crack potently crack a couple of another hashs as well.
-This feature will be added later one.
-but if you feel like doing so.. Feel free to modify the script
-to suit your needs.
 
-### Obs2
+
+So far pycrack can deal only with md5 hashs.  
+However as we are using hashlib. 
+We could potentialy crack a couple of other hashs as well.
+Maybe I'll add more options later on.
+But feel free to modify the script to suit your needs.
+Any pool request will be welcome. 
+
+
 Number of workers should be the same as the number of cores
 in your machine. If your using linux you can try 'nproc'.
 Also wordlist lenght can be found with 'wc -l /path/to/wordlist.txt'
