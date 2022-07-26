@@ -194,7 +194,7 @@ def start_workers(slices):
 
 
 def usage():
-    print(f'{sys.argv[0]} [hash] [algorithm] [wordlist] [wordlist lenght] [workers]')    
+    print(f'{sys.argv[0]} [hash] [algorithm] [wordlist] [wordlist lenght] [cores]')    
 
 
 def main():

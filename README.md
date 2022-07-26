@@ -21,7 +21,7 @@
 
 #### Usage:
 ```
-./pycrack [hash] [algorithm] [wordlist] [wordlist lenght] [workers]
+./pycrack [hash] [algorithm] [wordlist] [wordlist lenght] [cores]
 
 ```
 
@@ -35,3 +35,23 @@ md5 \
 ```
 
 ![alt text](./images/potato21.png)
+
+
+On linux you can found out how many cores you have you nproc.
+```bash
+nproc
+```
+
+![alt text](./images/cpus.png)
+
+
+On linux you could count the lines with the fallowing command.
+```bash
+wc -l /path/to/wordlist.txt
+```
+
+![alt text](./images/wc.png)
+
+
+I use crackstation.txt on my labs. You can download from the link below.
+[crackstation.txt](https://crackstation.net/crackstation-wordlist-password-cracking-dictionary.htm)
