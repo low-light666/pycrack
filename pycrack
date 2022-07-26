@@ -36,6 +36,27 @@ global secret
 global wd
 global wd_len
 global workers
+global algorithm
+global alg_method
+
+def blake2b(step):
+    global wd, secret
+    with open(wd, 'rb') as generator:
+        words = itertools.islice(generator, step[0], step[1])
+        for word in words:
+            if hashlib.blake2b(word.strip()).hexdigest() == secret:
+                return word.decode()
+    return None
+
+
+def blake2s(step):
+    global wd, secret
+    with open(wd, 'rb') as generator:
+        words = itertools.islice(generator, step[0], step[1])
+        for word in words:
+            if hashlib.blake2s(word.strip()).hexdigest() == secret:
+                return word.decode()
+    return None
 
 
 def md5(step):
@@ -48,10 +69,120 @@ def md5(step):
     return None
 
 
+def sha1(step):
+    global wd, secret
+    with open(wd, 'rb') as generator:
+        words = itertools.islice(generator, step[0], step[1])
+        for word in words:
+            if hashlib.sha1(word.strip()).hexdigest() == secret:
+                return word.decode()
+    return None
+
+
+def sha224(step):
+    global wd, secret
+    with open(wd, 'rb') as generator:
+        words = itertools.islice(generator, step[0], step[1])
+        for word in words:
+            if hashlib.sha1(word.strip()).hexdigest() == secret:
+                return word.decode()
+    return None
+
+
+def sha256(step):
+    global wd, secret
+    with open(wd, 'rb') as generator:
+        words = itertools.islice(generator, step[0], step[1])
+        for word in words:
+            if hashlib.sha256(word.strip()).hexdigest() == secret:
+                return word.decode()
+    return None
+
+
+def sha384(step):
+    global wd, secret
+    with open(wd, 'rb') as generator:
+        words = itertools.islice(generator, step[0], step[1])
+        for word in words:
+            if hashlib.sha384(word.strip()).hexdigest() == secret:
+                return word.decode()
+    return None
+
+
+def sha3_224(step):
+    global wd, secret
+    with open(wd, 'rb') as generator:
+        words = itertools.islice(generator, step[0], step[1])
+        for word in words:
+            if hashlib.sha3_224(word.strip()).hexdigest() == secret:
+                return word.decode()
+    return None
+
+
+def sha3_256(step):
+    global wd, secret
+    with open(wd, 'rb') as generator:
+        words = itertools.islice(generator, step[0], step[1])
+        for word in words:
+            if hashlib.sha3_256(word.strip()).hexdigest() == secret:
+                return word.decode()
+    return None
+
+
+def sha3_384(step):
+    global wd, secret
+    with open(wd, 'rb') as generator:
+        words = itertools.islice(generator, step[0], step[1])
+        for word in words:
+            if hashlib.sha3_384(word.strip()).hexdigest() == secret:
+                return word.decode()
+    return None
+
+
+def sha3_512(step):
+    global wd, secret
+    with open(wd, 'rb') as generator:
+        words = itertools.islice(generator, step[0], step[1])
+        for word in words:
+            if hashlib.sha3_512(word.strip()).hexdigest() == secret:
+                return word.decode()
+    return None
+
+
+def sha512(step):
+    global wd, secret
+    with open(wd, 'rb') as generator:
+        words = itertools.islice(generator, step[0], step[1])
+        for word in words:
+            if hashlib.sha512(word.strip()).hexdigest() == secret:
+                return word.decode()
+    return None
+
+
+def shake_128(step):
+    global wd, secret
+    with open(wd, 'rb') as generator:
+        words = itertools.islice(generator, step[0], step[1])
+        for word in words:
+            if hashlib.shake_128(word.strip()).hexdigest() == secret:
+                return word.decode()
+    return None
+
+
+def shake_256(step):
+    global wd, secret
+    with open(wd, 'rb') as generator:
+        words = itertools.islice(generator, step[0], step[1])
+        for word in words:
+            if hashlib.shake_256(word.strip()).hexdigest() == secret:
+                return word.decode()
+    return None
+
+
 def start_workers(slices):
-    global workers
+    global workers, alg_method
     with ProcessPoolExecutor(max_workers=workers) as executor:
-        pool = [executor.submit(md5, step) for step in slices]
+        pool = [executor.submit(alg_method, step) for step in slices]
         for process in as_completed(pool):
             try:
                 result = process.result()
@@ -63,14 +194,32 @@ def start_workers(slices):
 
 
 def usage():
-    print(f'{sys.argv[0]} [hash] [wordlist] [wordlist lenght] [workers]')    
+    print(f'{sys.argv[0]} [hash] [algorithm] [wordlist] [wordlist lenght] [workers]')    
 
 
 def main():
-    global secret, regex, wd, wd_len, workers
-    if wd_len < 2:
+    global secret, algorithm, alg_method, wd, wd_len, workers
+    algorithm = algorithm.strip().lower()
+    algorithms = [
+        'blake2b',
+        'blake2s',
+        'md5',
+        'sha1',
+        'sha224',
+        'sha256',
+        'sha384',
+        'sha3_224',
+        'sha3_256',
+        'sha3_384',
+        'sha3_512',
+        'sha512',
+        'shake_128'
+        'shake_256'
+    ]   
+    if algorithm not in algorithms or wd_len < 2:
         usage()
         sys.exit(2)
+    alg_method = eval(algorithm)
     print(f'Address Space: {wd_len} Workers: {workers}')
     steps  = [i for i in range( 0, wd_len, int(wd_len / workers))]
     steps[-1] = wd_len
@@ -85,9 +234,9 @@ def main():
 
 if __name__ == '__main__':
     args = sys.argv[:]
-    if len(args) != 5:
+    if len(args) != 6:
         usage()
         sys.exit(2)
-    secret, wd, wd_len, workers = sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4])
+    secret, algorithm, wd, wd_len, workers = sys.argv[1], sys.argv[2], sys.argv[3], int(sys.argv[4]), int(sys.argv[5])
     main()
 
