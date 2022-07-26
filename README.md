@@ -55,5 +55,7 @@ wc -l /path/to/wordlist.txt
 ![alt text](./images/wc.png)
 
 
-I use crackstation.txt on my labs. You can download from the link.
+I use crackstation.txt on my labs. You can download it from the link.
 [crackstation.txt](https://crackstation.net/crackstation-wordlist-password-cracking-dictionary.htm)
+
+#### We are using GPLv3. Feel free to modify this script as much as you want...
