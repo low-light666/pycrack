@@ -36,6 +36,8 @@ md5 \
 
 ![alt text](./images/potato21.png)
 
+SHA512 can take a tad longer but still feasible.
+![alt text](./images/sha512.png)
 
 On linux you can use nproc to figure out how may cores you have.
 ```bash
