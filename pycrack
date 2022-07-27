@@ -221,9 +221,9 @@ def main():
         sys.exit(2)
     alg_method = eval(algorithm)
     print(f'Address Space: {wd_len} Workers: {workers}')
-    steps  = [i for i in range( 0, wd_len, int(wd_len / workers))]
-    steps[-1] = wd_len
-    slices = [(steps[j], steps[j+1]) for j in range(len(steps)-1)]
+    starts = [i for i in range( 0, wd_len, int(wd_len / workers))][:-1]
+    stops =  starts[1:]  + [wd_len]
+    slices = list(zip(starts, stops))
     print('Running bruteforce ...')
     result = start_workers(slices)
     if result is not None:
