@@ -20,7 +20,9 @@
 
 
 #### Usage:
-```
+```bash
+cd pycrack
+chmod +x pycrack
 ./pycrack [hash] [algorithm] [wordlist] [wordlist lenght] [cores]
 
 ```
