@@ -32,15 +32,7 @@ from time import perf_counter
 
 start = perf_counter()
 
-global secret
-global wd
-global wd_len
-global workers
-global algorithm
-global alg_method
-
-def blake2b(step):
-    global wd, secret
+def blake2b(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
         for word in words:
@@ -49,8 +41,7 @@ def blake2b(step):
     return None
 
 
-def blake2s(step):
-    global wd, secret
+def blake2s(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
         for word in words:
@@ -59,8 +50,7 @@ def blake2s(step):
     return None
 
 
-def md5(step):
-    global wd, secret
+def md5(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
         for word in words:
@@ -69,8 +59,7 @@ def md5(step):
     return None
 
 
-def sha1(step):
-    global wd, secret
+def sha1(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
         for word in words:
@@ -79,8 +68,7 @@ def sha1(step):
     return None
 
 
-def sha224(step):
-    global wd, secret
+def sha224(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
         for word in words:
@@ -89,8 +77,7 @@ def sha224(step):
     return None
 
 
-def sha256(step):
-    global wd, secret
+def sha256(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
         for word in words:
@@ -99,8 +86,7 @@ def sha256(step):
     return None
 
 
-def sha384(step):
-    global wd, secret
+def sha384(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
         for word in words:
@@ -109,8 +95,7 @@ def sha384(step):
     return None
 
 
-def sha3_224(step):
-    global wd, secret
+def sha3_224(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
         for word in words:
@@ -119,8 +104,7 @@ def sha3_224(step):
     return None
 
 
-def sha3_256(step):
-    global wd, secret
+def sha3_256(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
         for word in words:
@@ -129,8 +113,7 @@ def sha3_256(step):
     return None
 
 
-def sha3_384(step):
-    global wd, secret
+def sha3_384(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
         for word in words:
@@ -139,8 +122,7 @@ def sha3_384(step):
     return None
 
 
-def sha3_512(step):
-    global wd, secret
+def sha3_512(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
         for word in words:
@@ -149,8 +131,7 @@ def sha3_512(step):
     return None
 
 
-def sha512(step):
-    global wd, secret
+def sha512(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
         for word in words:
@@ -159,8 +140,7 @@ def sha512(step):
     return None
 
 
-def shake_128(step):
-    global wd, secret
+def shake_128(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
         for word in words:
@@ -169,8 +149,7 @@ def shake_128(step):
     return None
 
 
-def shake_256(step):
-    global wd, secret
+def shake_256(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
         for word in words:
@@ -179,10 +158,9 @@ def shake_256(step):
     return None
 
 
-def start_workers(slices):
-    global workers, alg_method
+def start_workers(slices, workers, alg_method):
     with ProcessPoolExecutor(max_workers=workers) as executor:
-        pool = [executor.submit(alg_method, step) for step in slices]
+        pool = [executor.submit(alg_method, step, wd, secret) for step in slices]
         for process in as_completed(pool):
             try:
                 result = process.result()
@@ -197,8 +175,7 @@ def usage():
     print(f'{sys.argv[0]} [hash] [algorithm] [wordlist] [wordlist lenght] [cores]')    
 
 
-def main():
-    global secret, algorithm, alg_method, wd, wd_len, workers
+def main(secret, algorithm, wd, wd_len, workers):
     algorithm = algorithm.strip().lower()
     algorithms = [
         'blake2b',
@@ -225,7 +202,7 @@ def main():
     stops =  starts[1:]  + [wd_len]
     slices = (zip(starts, stops))
     print('Running bruteforce ...')
-    result = start_workers(slices)
+    result = start_workers(slices, workers, alg_method)
     if result is not None:
         print(f'Found! {result}')
     else:
@@ -239,7 +216,11 @@ if __name__ == '__main__':
     if len(args) != 6:
         usage()
         sys.exit(2)
-    secret, algorithm, wd, wd_len, workers = sys.argv[1], sys.argv[2], sys.argv[3], int(sys.argv[4]), int(sys.argv[5])
-    main()
+    secret = sys.argv[1]
+    algorithm = sys.argv[2]
+    wd = sys.argv[3]
+    wd_len = int(sys.argv[4])
+    workers = int(sys.argv[5])
+    main(secret, algorithm, wd, wd_len, workers)
 
 # We stay with Ukraine
