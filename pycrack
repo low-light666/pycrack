@@ -223,7 +223,7 @@ def main():
     print(f'Address Space: {wd_len} Workers: {workers}')
     starts = [i for i in range( 0, wd_len, int(wd_len / workers))][:-1]
     stops =  starts[1:]  + [wd_len]
-    slices = list(zip(starts, stops))
+    slices = (zip(starts, stops))
     print('Running bruteforce ...')
     result = start_workers(slices)
     if result is not None:
