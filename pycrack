@@ -40,7 +40,6 @@ def blake2b(step, wd, secret):
                 return word.decode()
     return None
 
-
 def blake2s(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
@@ -48,7 +47,6 @@ def blake2s(step, wd, secret):
             if hashlib.blake2s(word.strip()).hexdigest() == secret:
                 return word.decode()
     return None
-
 
 def md5(step, wd, secret):
     with open(wd, 'rb') as generator:
@@ -58,7 +56,6 @@ def md5(step, wd, secret):
                 return word.decode()
     return None
 
-
 def sha1(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
@@ -66,7 +63,6 @@ def sha1(step, wd, secret):
             if hashlib.sha1(word.strip()).hexdigest() == secret:
                 return word.decode()
     return None
-
 
 def sha224(step, wd, secret):
     with open(wd, 'rb') as generator:
@@ -76,7 +72,6 @@ def sha224(step, wd, secret):
                 return word.decode()
     return None
 
-
 def sha256(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
@@ -84,7 +79,6 @@ def sha256(step, wd, secret):
             if hashlib.sha256(word.strip()).hexdigest() == secret:
                 return word.decode()
     return None
-
 
 def sha384(step, wd, secret):
     with open(wd, 'rb') as generator:
@@ -94,7 +88,6 @@ def sha384(step, wd, secret):
                 return word.decode()
     return None
 
-
 def sha3_224(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
@@ -102,7 +95,6 @@ def sha3_224(step, wd, secret):
             if hashlib.sha3_224(word.strip()).hexdigest() == secret:
                 return word.decode()
     return None
-
 
 def sha3_256(step, wd, secret):
     with open(wd, 'rb') as generator:
@@ -112,7 +104,6 @@ def sha3_256(step, wd, secret):
                 return word.decode()
     return None
 
-
 def sha3_384(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
@@ -120,7 +111,6 @@ def sha3_384(step, wd, secret):
             if hashlib.sha3_384(word.strip()).hexdigest() == secret:
                 return word.decode()
     return None
-
 
 def sha3_512(step, wd, secret):
     with open(wd, 'rb') as generator:
@@ -130,7 +120,6 @@ def sha3_512(step, wd, secret):
                 return word.decode()
     return None
 
-
 def sha512(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
@@ -138,7 +127,6 @@ def sha512(step, wd, secret):
             if hashlib.sha512(word.strip()).hexdigest() == secret:
                 return word.decode()
     return None
-
 
 def shake_128(step, wd, secret):
     with open(wd, 'rb') as generator:
@@ -148,7 +136,6 @@ def shake_128(step, wd, secret):
                 return word.decode()
     return None
 
-
 def shake_256(step, wd, secret):
     with open(wd, 'rb') as generator:
         words = itertools.islice(generator, step[0], step[1])
@@ -157,8 +144,7 @@ def shake_256(step, wd, secret):
                 return word.decode()
     return None
 
-
-def start_workers(slices, workers, alg_method):
+def start_workers(slices, wd, secret, workers, alg_method):
     with ProcessPoolExecutor(max_workers=workers) as executor:
         pool = [executor.submit(alg_method, step, wd, secret) for step in slices]
         for process in as_completed(pool):
@@ -170,12 +156,18 @@ def start_workers(slices, workers, alg_method):
                 return result
     return None
 
-
 def usage():
     print(f'{sys.argv[0]} [hash] [algorithm] [wordlist] [wordlist lenght] [cores]')    
 
-
-def main(secret, algorithm, wd, wd_len, workers):
+def main(args):
+    if len(args) != 6:
+        usage()
+        sys.exit(2)
+    secret = args[1]
+    algorithm = args[2]
+    wd = args[3]
+    wd_len = int(args[4])
+    workers = int(args[5])
     algorithm = algorithm.strip().lower()
     algorithms = [
         'blake2b',
@@ -202,7 +194,7 @@ def main(secret, algorithm, wd, wd_len, workers):
     stops =  starts[1:]  + [wd_len]
     slices = (zip(starts, stops))
     print('Running bruteforce ...')
-    result = start_workers(slices, workers, alg_method)
+    result = start_workers(slices, wd, secret, workers, alg_method)
     if result is not None:
         print(f'Found! {result}')
     else:
@@ -212,15 +204,6 @@ def main(secret, algorithm, wd, wd_len, workers):
 
 
 if __name__ == '__main__':
-    args = sys.argv[:]
-    if len(args) != 6:
-        usage()
-        sys.exit(2)
-    secret = sys.argv[1]
-    algorithm = sys.argv[2]
-    wd = sys.argv[3]
-    wd_len = int(sys.argv[4])
-    workers = int(sys.argv[5])
-    main(secret, algorithm, wd, wd_len, workers)
+    main(sys.argv[:])
 
 # We stay with Ukraine
